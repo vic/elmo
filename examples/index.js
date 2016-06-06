@@ -11,7 +11,9 @@ import Counter from './counter'
 run(main, drivers())
 
 function main ({elmoBus, counter, inferno}) {
+  counter.msg$.map(console.log.bind(console, 'c msg! '))
   return {
+    elmoBus: counter.msg$,
     counter: elmoBus,
     inferno: counter.view$
   }

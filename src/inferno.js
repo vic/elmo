@@ -6,7 +6,8 @@ import InfernoDOM from 'inferno-dom'
 export function makeInfernoDriver (container) {
   function infernoDriver (vdom$) {
     function render (past, present) {
-      InfernoDOM.render(present, past)
+      console.log('RENDER', {past, present})
+      InfernoDOM.render(present, container)
       return present
     }
     return S.scan(render, container, vdom$)

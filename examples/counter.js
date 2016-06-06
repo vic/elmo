@@ -36,7 +36,7 @@ function view ({ Inc }, modelView$) {
     mview =>
       <div>
         <p>Count: { mview.count }</p>
-        <button onClick={ Inc(1) }>Inc</button>
+        <button onClick={ (e) => Inc(1) }>Inc</button>
       </div>
   )
 }

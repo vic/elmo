@@ -1,9 +1,9 @@
 // -*- mode: js -*-
 
-import S from './../src/stream'
+import S from '../src/stream'
 import R from 'ramda'
 
-import {elmoMsg, elmoLens} from './../src/elmo'
+import {elmoMsg, elmoLens} from '../src/elmo'
 
 import Inferno from 'inferno'
 import InfernoDOM from 'inferno-dom'
@@ -24,14 +24,14 @@ function init (flags) {
   return initialModel
 }
 
-// update : Msg -> Model -> Model
-function update ({ Inc$ }, model$) {
+// update : MsgStream -> Model -> Model
+function update ({ Inc }, model$) {
   const inc = R.over(Model.count, R.inc)
-  return S.combine(inc, model$, Inc$)
+  return S.combine(inc, model$, Inc)
 }
 
-// view : CompMsg -> ModelView -> ViewOpt Html Msg
-function view ({Inc}, modelView$) {
+// view : MsgComposer -> ModelView -> Html Msg
+function view ({ Inc }, modelView$) {
   return modelView$.map(
     mview =>
       <div>

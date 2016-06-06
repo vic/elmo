@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "examples": "webpack-dev-server --config ./examples/.webpack.es6"
+    "examples": "webpack-dev-server --config ./examples/.webpack.js"
   },
   "keywords": [],
   "author": "",

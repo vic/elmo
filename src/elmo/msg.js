@@ -11,14 +11,14 @@ export function elmoMsg (spec) {
   }
 
   function ElmoMsg (from, ...to) {
-    Object.assign(this, R.mapObjIndexed(
+    return R.mapObjIndexed(
       R.compose(
-        (fmt, key) => (value) => {
+        (fmt, subject) => (value) => {
           const payload = fmt(value)
-          return new Msg({payload, from, to})
-        },
+          return new Msg({subject, payload, from, to})
+        })
       , spec
-    ))
+    )
   }
 
   const isMsg = R.is(Msg)
@@ -31,10 +31,19 @@ export function elmoMsg (spec) {
   return ElmoMsg
 }
 
+export function msgBySubject (msgSource, ...subjects) {
+  const filter = (subject) => msgSource.filter(
+    msg => msg.subject === subject)
+  return R.compose(
+    R.fromPairs,
+    R.map(subject => [subject, filter(subject)])
+  )(subjects)
+}
+
 export function msgSender (Msg) {
   const msgSink = S.shame()
   const msgSend = R.mapObjIndexed(
-    R.compose(msgSink.shamefullySendNext, R.__)
+    (fmt) => (value) => msgSink.shamefullySendNext(fmt(value))
     , Msg)
   return {msgSend, msgSink}
 }

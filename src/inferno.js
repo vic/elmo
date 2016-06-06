@@ -1,4 +1,6 @@
 // -*- js -*-
+import S from './stream'
+import InfernoDOM from 'inferno-dom'
 
 // renders vdom with inferno
 export function makeInfernoDriver (container) {
@@ -7,7 +9,7 @@ export function makeInfernoDriver (container) {
       InfernoDOM.render(present, past)
       return present
     }
-    return flyd.scan(render, container, vdom$)
+    return S.scan(render, container, vdom$)
   }
   return infernoDriver
 }

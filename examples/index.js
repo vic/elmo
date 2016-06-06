@@ -10,18 +10,17 @@ import Counter from './counter'
 
 run(main, drivers())
 
-function main ({msg$, counter, inferno}) {
+function main ({elmoBus, counter, inferno}) {
   return {
-    counter: S.filter(Counter.Msg.isMsg, msg$),
-    msg$:    counter.msg$,
+    counter: elmoBus,
     inferno: counter.view$
   }
 }
 
 function drivers() {
   return {
-    msg$:    R.identity,
-    counter: makeElmoComponent(Counter),
+    elmoBus: R.identity,
+    counter: makeElmoDriver(Counter),
     inferno: makeInfernoDriver(document.body)
   }
 }

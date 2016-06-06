@@ -1,13 +1,13 @@
 // -*- js -*-
+import R from 'ramda'
+import flyd from 'flyd'
+import flydFilter from 'flyd/module/filter'
 
 export default function FlydAdapter() {
   const adapter = this
 
-  const flyd = require('flyd')
-  const flydFilter = require('flyd/module/filter')
-
   function Stream (stream) {
-    if (!flyd.isStream()) {
+    if (!flyd.isStream(stream)) {
       throw 'Can only adapt flyd streams'
     }
 
@@ -22,10 +22,10 @@ export default function FlydAdapter() {
   const isStream = R.is(Stream)
 
   function adapt(fn) {
-    const unadapt = (...args) =>
-          R.map(a => isStream(a) ? a.unadapted : a, args)
-    const apply = R.apply(fn)
-    return R.compose(adapter.adapt, apply, unadapt)
+    const unadapt = R.map(a => isStream(a) ? a.unadapted : a)
+    return function (...args) {
+      return adapter.adapt(fn(...unadapt(args)))
+    }
   }
 
   function combineLatest(project, ...streams) {
@@ -39,13 +39,17 @@ export default function FlydAdapter() {
     return flyd.combine(valueProject, streams);
   }
 
-  function shameStream (shame) {
-    shame.shamefullySendNext = shame.unadapted
+  function shameStream () {
+    const stream = flyd.stream()
+    const shame = adapter.adapt(stream)
+    shame.shamefullySendNext = (v) => stream(v)
     return shame
   }
 
-  function mimicStream (mimic) {
-    mimic.imitate = (source) => { source.map(mimic.unadapted) }
+  function mimicStream () {
+    const stream = flyd.stream()
+    const mimic = adapter.adapt(stream)
+    mimic.imitate = (source) => { source.map(stream) }
     return mimic
   }
 
@@ -53,11 +57,12 @@ export default function FlydAdapter() {
     adapt    : R.construct(Stream),
     stream   : adapt(flyd.stream),
     merge    : adapt(flyd.merge),
-    filter   : adapt(flyd.filter),
+    filter   : adapt(flydFilter),
     isStream : isStream,
-    mimic    : R.compose(mimic, adapt, flyd.stream),
-    shame    : R.compose(shame, adapt, flyd.stream),
+    mimic    : mimicStream,
+    shame    : shameStream,
     combine  : adapt(combineLatest),
+    scan     : adapt(flyd.scan)
   })
 
 }

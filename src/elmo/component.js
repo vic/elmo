@@ -3,6 +3,7 @@
 import R from 'ramda'
 import S from '../stream'
 import {msgSender, msgPayloadBySubject} from './msg'
+import {updateFn} from './update'
 
 export function elmoComponent (component, flags, msgSource) {
   const {Msg, Model, init, view, update} = component
@@ -16,8 +17,9 @@ export function elmoComponent (component, flags, msgSource) {
   const initModel = component.init(flags)
   const modelMimic$ = S.mimic()
   const modelRo$ = modelMimic$.map(Model.readOnly)
+  const modelRw$ = modelMimic$.map(Model.readWrite)
 
-  const update$ = update(msgBySubject, modelMimic$)
+  const update$ = updateFn(update)(msgBySubject, modelRw$)
   const view$ = view(msgSend, modelRo$)
 
   const model$ = modelMimic$.imitate(

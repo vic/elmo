@@ -10,11 +10,15 @@ import InfernoDOM from 'inferno-dom'
 
 // type
 const Msg = elmoMsg({
-  Inc:   R.always
+  Inc: R.always
 })
 
 // type
 const Model = elmoLens({
+  // the model lens lets you retrieve the whole model
+  model: R.lens(R.identity, R.identity),
+
+  // but you'd prefer to use lens to keep it functional
   count: R.lensProp('count')
 })
 
@@ -24,23 +28,20 @@ function init (flags) {
   return initialModel
 }
 
-// update by msg subject
-const Update = {
-  Inc: (msg, model) => R.over(Model.count, R.inc, model)
-}
-
-// update : MsgStream -> Model -> Model
-function update ({ Inc }, model$) {
-  return updateBySubject(Update, { Inc }, model$)
+// Msg -> ModelLens -> Model
+const update = {
+  Inc: (n, ml) => ml.count(R.add(n))
 }
 
 // view : MsgComposer -> ModelRead -> Html Msg
 function view ({ Inc }, modelRead$) {
   return modelRead$.map(model =>
-      <div>
-        <p>Count: { model.count }</p>
-        <button onClick={ (e) => Inc(1) }>Inc</button>
-      </div>
+    <div>
+      <p>Count: { model.count }</p>
+      <button onClick={ Inc(1) }>Inc</button>
+      <button onClick={ Inc(-1) }>Dec</button>
+      <button onClick={ Inc(-model.count) }>Reset</button>
+    </div>
   )
 }
 

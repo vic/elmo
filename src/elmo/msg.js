@@ -10,15 +10,15 @@ export function elmoMsg (spec) {
       , props))
   }
 
-  function ElmoMsg (from, ...to) {
+  const newMsg = R.construct(Msg)
+
+  function MsgComposer(from, ...to) {
     return R.mapObjIndexed(
-      R.compose(
-        (fmt, subject) => (value) => {
-          const payload = fmt(value)
-          return new Msg({subject, payload, from, to})
-        })
-      , spec
-    )
+      (envelop, subject) => (event) => (value) => {
+        const payload = envelop(value)(event)
+        return newMsg({subject, payload, from, to})
+      }
+      , spec)
   }
 
   const isMsg = R.is(Msg)
@@ -27,14 +27,14 @@ export function elmoMsg (spec) {
   const isFor = R.curry(
     (target, msg) => isMsg(msg) && R.contains(target, msg.to))
 
-  Object.assign(ElmoMsg, {isMsg, isFrom, isFor})
-  return ElmoMsg
+  Object.assign(MsgComposer, {isMsg, isFrom, isFor})
+  return MsgComposer
 }
 
 export function msgPayloadBySubject (msgSource, ...subjects) {
   const filter = (subject) => msgSource.filter(
     msg => msg.subject === subject)
-  const value = (msg) => msg.payload()
+  const value = (msg) => msg.payload
   return R.compose(
     R.fromPairs,
     R.map(subject => [subject, filter(subject).map(value)])
@@ -44,7 +44,10 @@ export function msgPayloadBySubject (msgSource, ...subjects) {
 export function msgSender (Msg) {
   const msgSink = S.shame()
   const msgSend = R.mapObjIndexed(
-    (fmt) => (value) => msgSink.shamefullySendNext(fmt(value))
+    (makeMsg, subject) => (value) => (event) =>
+      R.compose(msgSink.shamefullySendNext,
+                makeMsg(event))(value)
     , Msg)
   return {msgSend, msgSink}
 }
+

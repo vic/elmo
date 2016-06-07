@@ -3,20 +3,16 @@
 import R from 'ramda'
 import S from '../stream'
 
+export function updateFn (update) {
+  return R.is(Function, update) ? update : updateBySubject(update)
+}
+
 function UpdateBySubject (Updates, Msg, model$) {
   const mutations = R.mapObjIndexed(
     (mutate, subject) =>
       S.withLatestFrom(mutate, Msg[subject], model$)
-      .map(x => {
-        console.log('New update ', x)
-        return x
-      })
     , Updates)
   return mergeMutations(mutations)
-    .map(x => {
-      console.log('All updates', x)
-      return x
-    })
 }
 
 function mergeMutations(mutations) {

@@ -12,7 +12,7 @@ run(main, drivers())
 
 function main ({elmoBus, counter, inferno}) {
   return {
-    counter: counter.msg$
+    counter: counter.msg$,
     inferno: counter.view$
   }
 }

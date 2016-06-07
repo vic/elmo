@@ -10,7 +10,7 @@ import Counter from './counter'
 
 run(main, drivers())
 
-function main ({elmoBus, counter, inferno}) {
+function main ({counter, inferno}) {
   return {
     counter: counter.msg$,
     inferno: counter.view$

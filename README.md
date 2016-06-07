@@ -56,13 +56,13 @@ nodes to be updated on the browser by the [Inferno Driver][inferno_driver]
 
 I did try to keep things as pure and functional as possible -  Elmo itself uses [Ramda](ramdajs.com) extensively to achieve this.
 
-One thing I've found interesting on explosing is having the 
+One thing I've found interesting on exploring is having the 
 Elmo Component's `update` and `view` functions not having direct access to the model's object.
 Instead, the [`view`][view] has *read-only* access to [lens](http://ramdajs.com/docs/#lens) of the current model.
-Even the [`update`][update] function is given just a *read-write* version of the lens to update the current state.
-- as a side note, it is of course possible to get the actual model object, but I was just trying to hide it
-to prevent object mutation.
+Even the [`update`][update] function is given lenses for getting, setting and updating while keeping data *immutable*, the new data returned by update lenses becomes the new model. It is of course possible to get the actual model object inside those functions, but I just didnt want to make that obvious, and trying to hide it to prevent object mutation.
 
+
+The example counter can be seen [here](http://vic.github.io/elmo)
 
 To be continued...
 

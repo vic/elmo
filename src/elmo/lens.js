@@ -19,7 +19,9 @@ export function elmoLens (spec, gsm) {
 
 function readWriteLens (spec, {get, set, mut}) {
   return buildLens(spec, (lens, model) => ({
-    __proto__: null,
+    writable: false,
+    configurable: false,
+    enumerable: true,
     get: () => {
       const gsm = {
         get: () => get(lens, model),
@@ -41,7 +43,9 @@ function readWriteLens (spec, {get, set, mut}) {
 
 function readOnlyLens (spec, {get}) {
   return buildLens(spec, (lens, model) => ({
-    __proto__: null,
+    writable: false,
+    configurable: false,
+    enumerable: true,
     get: () => get(lens, model)
   }))
 }

@@ -2,6 +2,7 @@
 import R from 'ramda'
 import flyd from 'flyd'
 import flydFilter from 'flyd/module/filter'
+import flydSwitch from 'flyd/module/switchlatest'
 
 export default function FlydAdapter() {
   const adapter = this
@@ -28,6 +29,11 @@ export default function FlydAdapter() {
     }
   }
 
+  function withLatestFrom(project, A, B) {
+    const stream = B.map(b => A.map(a => project(a, b)))
+    return flydSwitch(stream)
+  }
+
   function combineLatest(project, ...streams) {
     function valueProject(...args) {
       return R.compose(
@@ -49,7 +55,12 @@ export default function FlydAdapter() {
   function mimicStream () {
     const stream = flyd.stream()
     const mimic = adapter.adapt(stream)
-    mimic.imitate = (source) => { source.map(stream) }
+    function imitate (source) {
+      flyd.endsOn(source.end, stream)
+      source.map(stream)
+      return source
+    }
+    mimic.imitate = adapt(imitate)
     return mimic
   }
 
@@ -62,7 +73,8 @@ export default function FlydAdapter() {
     mimic    : mimicStream,
     shame    : shameStream,
     combine  : adapt(combineLatest),
-    scan     : adapt(flyd.scan)
+    scan     : adapt(flyd.scan),
+    withLatestFrom : adapt(withLatestFrom)
   })
 
 }

@@ -3,7 +3,7 @@
 import S from '../src/stream'
 import R from 'ramda'
 
-import {elmoMsg, elmoLens} from '../src/elmo'
+import {elmoMsg, elmoLens, updateBySubject} from '../src/elmo'
 
 import Inferno from 'inferno'
 import InfernoDOM from 'inferno-dom'
@@ -24,18 +24,21 @@ function init (flags) {
   return initialModel
 }
 
-// update : MsgStream -> Model -> Model
-function update ({ Inc }, model$) {
-  const inc = R.over(Model.count, R.inc)
-  return S.combine(inc, model$, Inc)
+// update by msg subject
+const Update = {
+  Inc: (msg, model) => R.over(Model.count, R.inc, model)
 }
 
-// view : MsgComposer -> ModelView -> Html Msg
-function view ({ Inc }, modelView$) {
-  return modelView$.map(
-    mview =>
+// update : MsgStream -> Model -> Model
+function update ({ Inc }, model$) {
+  return updateBySubject(Update, { Inc }, model$)
+}
+
+// view : MsgComposer -> ModelRead -> Html Msg
+function view ({ Inc }, modelRead$) {
+  return modelRead$.map(model =>
       <div>
-        <p>Count: { mview.count }</p>
+        <p>Count: { model.count }</p>
         <button onClick={ (e) => Inc(1) }>Inc</button>
       </div>
   )

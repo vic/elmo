@@ -31,12 +31,13 @@ export function elmoMsg (spec) {
   return ElmoMsg
 }
 
-export function msgBySubject (msgSource, ...subjects) {
+export function msgPayloadBySubject (msgSource, ...subjects) {
   const filter = (subject) => msgSource.filter(
     msg => msg.subject === subject)
+  const value = (msg) => msg.payload()
   return R.compose(
     R.fromPairs,
-    R.map(subject => [subject, filter(subject)])
+    R.map(subject => [subject, filter(subject).map(value)])
   )(subjects)
 }
 

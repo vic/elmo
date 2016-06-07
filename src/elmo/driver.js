@@ -4,9 +4,10 @@ import S from '../stream'
 import {elmoComponent} from './component'
 
 export function makeElmoDriver(Elmo, flags) {
-  function elmoDriver (msgSource) {
+  function elmoComponentDriver (msgSource) {
     const elmo = elmoComponent(Elmo, flags, msgSource)
     return elmo
   }
-  return elmoDriver
+  return elmoComponentDriver
 }
+

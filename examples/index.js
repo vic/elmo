@@ -11,17 +11,14 @@ import Counter from './counter'
 run(main, drivers())
 
 function main ({elmoBus, counter, inferno}) {
-  counter.msg$.map(console.log.bind(console, 'c msg! '))
   return {
-    elmoBus: counter.msg$,
-    counter: elmoBus,
+    counter: counter.msg$
     inferno: counter.view$
   }
 }
 
 function drivers() {
   return {
-    elmoBus: R.identity,
     counter: makeElmoDriver(Counter),
     inferno: makeInfernoDriver(document.body)
   }

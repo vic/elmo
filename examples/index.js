@@ -1,11 +1,9 @@
 // -*- js -*-
 
 import {run} from '../src/hellcycle'
-import {makeElmoDriver, makeElmoComponent} from '../src/elmo'
+import {makeElmoDriver} from '../src/elmo'
 import {makeInfernoDriver} from '../src/inferno'
 
-import S from '../src/stream'
-import R from 'ramda'
 import Counter from './counter'
 
 run(main, drivers())

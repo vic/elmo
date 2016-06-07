@@ -3,7 +3,7 @@
 import S from '../src/stream'
 import R from 'ramda'
 
-import {elmoMsg, elmoLens, updateBySubject} from '../src/elmo'
+import {elmoMsg, elmoLens} from '../src/elmo'
 
 import Inferno from 'inferno'
 import InfernoDOM from 'inferno-dom'
